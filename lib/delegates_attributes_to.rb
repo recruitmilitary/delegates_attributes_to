@@ -34,7 +34,9 @@ module DelegatesAttributesTo
       reflection.options[:autosave] = true unless reflection.options.has_key?(:autosave)
 
       if attributes.empty? || attributes.delete(:defaults)
-        attributes += reflection.klass.column_names - default_rejected_delegate_columns
+        if ActiveRecord::Base.connection.table_exists?(reflection.table_name)
+          attributes += reflection.klass.column_names - default_rejected_delegate_columns
+        end
       end
 
       attributes.each do |attribute|
